@@ -1,0 +1,11 @@
+# AutoHotkey compiled output
+*.exe
+
+# Editor / OS noise
+.vscode/
+desktop.ini
+Thumbs.db
+
+# Local backups of the script
+*.bak
+*.bak-*
