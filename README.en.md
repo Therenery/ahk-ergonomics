@@ -48,6 +48,10 @@ A tap toggles Caps Lock (on release, so it never interferes with combos). Held d
 | Hold + left click | Copy the selection; if nothing is selected, select all without copying |
 | Hold + right click | Paste on release |
 
+### 5. Both side buttons held: screenshot
+
+Hold the upper and lower side buttons together → `Win + Shift + S` opens the system snipping overlay (region / window / full screen, copied to the clipboard). Single-click Back / Forward and the other hold gestures are unaffected.
+
 ## Requirements
 
 - Windows 10 / 11

@@ -130,6 +130,7 @@ GetExplorerPath(hwnd) {
 capsUsed := false
 xbtn1Used := false
 xbtn2Used := false
+xbtnChord := false   ; 上下侧键同时按住时置位，两个键都松开才复位
 
 ; ===== 虚拟桌面循环配置 =====
 global totalDesktops := 6   ; 修改为你实际使用的虚拟桌面总数
@@ -211,18 +212,30 @@ CapsLock & f:: {
 ; 按住 + 中键：任务视图
 ; 按住 + 左键：回车 Enter
 ; 按住 + 右键：退格 Backspace
+; 与上侧键同时按住：截图（Win+Shift+S）
 XButton1:: {
-    global xbtn1Used
+    global xbtn1Used, xbtn2Used, xbtnChord
+    ; 上侧键已按住且没被用于其它手势：判定为双键和弦
+    if (GetKeyState("XButton2", "P") && !xbtn2Used && !xbtnChord) {
+        xbtnChord := true
+        xbtn1Used := true
+        xbtn2Used := true
+        Send("#+s")
+        return
+    }
     xbtn1Used := false
 }
 
 XButton1 Up:: {
-    global xbtn1Used
+    global xbtn1Used, xbtnChord
+    if (!GetKeyState("XButton2", "P"))
+        xbtnChord := false
     if (!xbtn1Used)
         Send("{XButton1}")
 }
 
-#HotIf GetKeyState("XButton1", "P")
+; 和弦触发后本层失效，避免按住侧键时把截图浮层的左键吞成回车
+#HotIf GetKeyState("XButton1", "P") && !xbtnChord
 WheelUp:: {
     global xbtn1Used, currentDesktop, totalDesktops
     xbtn1Used := true
@@ -279,18 +292,30 @@ RButton:: {
 ; 单独按：松开时发送原生 XButton2（前进）
 ; 按住 + 左键单击：有选中则复制；没选中则全选，不复制
 ; 按住 + 右键：松开右键粘贴
+; 与下侧键同时按住：截图（Win+Shift+S）
 XButton2:: {
-    global xbtn2Used
+    global xbtn1Used, xbtn2Used, xbtnChord
+    ; 下侧键已按住且没被用于其它手势：判定为双键和弦
+    if (GetKeyState("XButton1", "P") && !xbtn1Used && !xbtnChord) {
+        xbtnChord := true
+        xbtn1Used := true
+        xbtn2Used := true
+        Send("#+s")
+        return
+    }
     xbtn2Used := false
 }
 
 XButton2 Up:: {
-    global xbtn2Used
+    global xbtn2Used, xbtnChord
+    if (!GetKeyState("XButton1", "P"))
+        xbtnChord := false
     if (!xbtn2Used)
         Send("{XButton2}")
 }
 
-#HotIf GetKeyState("XButton2", "P")
+; 和弦触发后本层失效，避免按住侧键时把截图浮层的左键吞成复制
+#HotIf GetKeyState("XButton2", "P") && !xbtnChord
 LButton:: {
     global xbtn2Used
     xbtn2Used := true
