@@ -5,6 +5,10 @@ if not A_IsAdmin {
 }
 #SingleInstance Force
 
+; ===== 终端配置 =====
+; 终端里跑的 shell。装了 PowerShell 7 用 pwsh.exe；只有系统自带的 5.1 就改成 powershell.exe
+global terminalShell := "pwsh.exe"
+
 ; ===== 按住左 Win 600ms（或 400ms 内双击后按住）打开终端 =====
 ; 依赖脚本本身已通过 #Requires 段落自动提权
 ; 若手势开始时焦点在资源管理器窗口，终端直接在该窗口当前文件夹打开
@@ -12,11 +16,13 @@ global lwinArmed := false
 global lwinLastUp := 0
 global lwinFg := 0
 global lwinOrigin := 0   ; 手势第一下按下时的前台窗口
+global lwinPriorKey := "" ; 按下 Win 之前最后按过的键，用来判断按住期间有没有按别的键
 
 ~LWin:: {
-    global lwinArmed, lwinLastUp, lwinFg, lwinOrigin
+    global lwinArmed, lwinLastUp, lwinFg, lwinOrigin, lwinPriorKey
     lwinArmed := false
     lwinFg := WinExist("A")
+    lwinPriorKey := A_PriorKey
     if (lwinLastUp > 0 && A_TickCount - lwinLastUp < 400)
         SetTimer(OpenTerminal, -450)
     else {
@@ -36,8 +42,11 @@ global lwinOrigin := 0   ; 手势第一下按下时的前台窗口
 }
 
 OpenTerminal() {
-    global lwinArmed, lwinFg, lwinOrigin
+    global lwinArmed, lwinFg, lwinOrigin, lwinPriorKey, terminalShell
     if (lwinArmed || !GetKeyState("LWin", "P"))
+        return
+    ; 按住 Win 期间按过其它键（空格、方向键等），说明是在用组合键，别抢
+    if (A_PriorKey != lwinPriorKey)
         return
     ; 按住 Win 期间前台变了，说明是在用 Win+某键，别抢
     if (WinExist("A") != lwinFg)
@@ -45,13 +54,13 @@ OpenTerminal() {
     lwinArmed := true
 
     ; 焦点在资源管理器：在当前文件夹打开；否则保持原行为
-    cmd := "wt.exe powershell.exe"
+    cmd := "wt.exe " terminalShell
     dir := GetExplorerPath(lwinOrigin)
     if (dir != "") {
         dir := StrReplace(dir, ";", "\;")   ; wt 用分号分隔子命令，路径里的分号要转义
         if (SubStr(dir, -1) = "\")          ; 盘符根目录以 \ 结尾，会把后面的引号转义掉，补成 \\
             dir .= "\"
-        cmd := 'wt.exe -d "' dir '" powershell.exe'
+        cmd := 'wt.exe -d "' dir '" ' terminalShell
     }
 
     ; 记录打开前已有的终端窗口，便于之后定位新窗口
@@ -134,7 +143,7 @@ xbtnChord := false   ; 上下侧键同时按住时置位，两个键都松开才
 
 ; ===== 虚拟桌面循环配置 =====
 global totalDesktops := 6   ; 修改为你实际使用的虚拟桌面总数
-global currentDesktop := 2  ; 启动脚本时，默认停留在第 2 个桌面
+global currentDesktop := 3  ; 启动脚本时，默认停留在第 3 个桌面
 
 MarkCapsUsed() {
     global capsUsed

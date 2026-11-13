@@ -8,7 +8,7 @@ A single AutoHotkey v2 script that fills in a few ergonomic gaps in Windows: hol
 
 ### 1. Hold Left Win to open a terminal
 
-- Hold left `Win` for 600 ms → Windows Terminal opens running PowerShell
+- Hold left `Win` for 600 ms → Windows Terminal opens running PowerShell 7 (configurable via `terminalShell`)
 - Or double-tap `Win` within 400 ms and keep the second press held
 - If File Explorer has focus, the terminal opens in that window's current folder; on Windows 11 the active tab is detected, so the path never comes from a background tab
 - If the foreground window changes while `Win` is held (i.e. you are using a `Win + key` shortcut), the gesture is abandoned
@@ -57,6 +57,7 @@ Hold the upper and lower side buttons together → `Win + Shift + S` opens the s
 - Windows 10 / 11
 - [AutoHotkey v2.0](https://www.autohotkey.com/) or later
 - Windows Terminal (`wt.exe`)
+- PowerShell 7 (`pwsh.exe`); if you only have the built-in 5.1, change `terminalShell` to `powershell.exe`
 - Microsoft Edge (used by the search hotkey; easy to change)
 
 ## Install
@@ -74,11 +75,12 @@ Elevation is needed because Windows blocks synthesized keystrokes from a lower-i
 
 ## Configuration
 
-Two constants near the middle of the script:
+A few constants near the middle of the script:
 
 ```ahk
+global terminalShell := "pwsh.exe"   ; shell to run in the terminal
 global totalDesktops := 6   ; number of virtual desktops
-global currentDesktop := 2  ; which desktop you are on at launch (1-based)
+global currentDesktop := 3  ; which desktop you are on at launch (1-based)
 ```
 
 The search hotkey hardcodes `msedge.exe`; edit the two `Run(...)` calls under `CapsLock & e` to use another browser.

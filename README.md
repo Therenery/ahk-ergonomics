@@ -8,7 +8,7 @@
 
 ### 1. 按住左 Win 打开终端
 
-- 按住左 Win 600 ms → 打开 Windows Terminal，里面跑 PowerShell
+- 按住左 Win 600 ms → 打开 Windows Terminal，里面跑 PowerShell 7（`terminalShell` 可改）
 - 或在 400 ms 内连按两下 Win，第二下按住 → 同样触发（适合把 Win 键当单手热键用）
 - 触发时如果焦点在资源管理器窗口，终端直接在该窗口的当前文件夹打开；Win11 多标签页会识别当前激活的那个标签页，不会误用同一窗口里其它标签的路径
 - 按住 Win 期间前台窗口变了（说明你在用 Win + 某键），脚本立刻放弃，不抢你的组合键
@@ -57,6 +57,7 @@
 - Windows 10 / 11
 - [AutoHotkey v2.0](https://www.autohotkey.com/) 或更新版本
 - Windows Terminal（`wt.exe`），终端快捷键依赖它
+- PowerShell 7（`pwsh.exe`）；只有系统自带的 5.1 时，把脚本里的 `terminalShell` 改成 `powershell.exe`
 - Microsoft Edge，搜索快捷键默认调用它
 
 ## 安装
@@ -74,11 +75,12 @@
 
 ## 配置
 
-脚本里两处常量按自己的习惯改：
+脚本里几处常量按自己的习惯改：
 
 ```ahk
+global terminalShell := "pwsh.exe"   ; 终端里跑的 shell
 global totalDesktops := 6   ; 虚拟桌面总数
-global currentDesktop := 2  ; 脚本启动时你正停在哪个桌面（从 1 数）
+global currentDesktop := 3  ; 脚本启动时你正停在哪个桌面（从 1 数）
 ```
 
 搜索快捷键里写死了 `msedge.exe`，想换浏览器就改 `CapsLock & e` 那段里的两处 `Run(...)`。
